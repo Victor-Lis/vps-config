@@ -1,4 +1,4 @@
-/mqtt
-/n8n
-/portainer
-/postgres
+*/data
+*/log
+
+*.env
