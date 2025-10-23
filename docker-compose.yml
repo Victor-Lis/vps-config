@@ -25,7 +25,6 @@ services:
     ports:
       - "1883:1883"
       - "9001:9001"
-    command: "cd /mosquitto/config && mosquitto -c mosquitto.conf"
 
   n8n:
     image: n8nio/n8n

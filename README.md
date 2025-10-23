@@ -33,7 +33,7 @@ Painel web para gerenciar containers. Volume: `./portainer`
 ## 📂 Estrutura do repositório
 
 - `docker-compose.yml` — arquivo principal
-- `mqtt/` — dados e configuração do Mosquitto
+- `mqtt/` — dados e configuração do Mosquitto (Não esqueça de criar o arquivo `mosquitto.conf` dentro deste diretório)
 - `n8n/` — dados do n8n
 - `portainer/` — dados do Portainer
 - `postgres/` — dados do Postgres
