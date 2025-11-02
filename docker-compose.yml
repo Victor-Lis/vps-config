@@ -23,6 +23,18 @@ services:
       - "1883:1883"
       - "9001:9001"
 
+  evolution:
+    image: atendai/evolution-api:latest
+    container_name: evolution
+    restart: always
+    env_file:
+      - ./evolution/.env
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./evolution:/app
+      - ./evolution/logs:/app/logs
+
   n8n:
     image: n8nio/n8n
     container_name: n8n
