@@ -1,0 +1,31 @@
+name: Restart
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Adicionar host ao known_hosts
+        run: |
+          if [ -z "${{ secrets.REMOTE_HOST }}" ]; then
+            echo "ERROR: secrets.REMOTE_HOST não está definido" >&2
+            exit 1
+          fi
+          ssh-keyscan -H "${{ secrets.REMOTE_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Reiniciar serviços via SSH
+        run: docker compose up -d
