@@ -32,7 +32,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - evolution_instances:/evolution/instances
+      - ./evolution:/app
+      - ./evolution/logs:/app/logs
 
   n8n:
     image: n8nio/n8n
