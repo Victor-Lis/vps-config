@@ -4,17 +4,20 @@ services:
   postgres:
     image: postgres:16
     container_name: postgres
-    restart: always
+    restart: unless-stopped
     env_file: ./postgres/.env
+    # Usar bind mount para persistência local (já existe ./postgres/data neste repositório)
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - local-network
 
   mqtt:
     image: eclipse-mosquitto:latest
     container_name: mqtt
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./mqtt/config:/mosquitto/config
       - ./mqtt/data:/mosquitto/data
@@ -22,11 +25,13 @@ services:
     ports:
       - "1883:1883"
       - "9001:9001"
+    networks:
+      - local-network
 
   evolution:
     image: atendai/evolution-api:latest
     container_name: evolution
-    restart: always
+    restart: unless-stopped
     env_file:
       - ./evolution/.env
     ports:
@@ -34,11 +39,13 @@ services:
     volumes:
       - ./evolution:/app
       - ./evolution/logs:/app/logs
+    networks:
+      - local-network
 
   n8n:
     image: n8nio/n8n
     container_name: n8n
-    restart: always
+    restart: unless-stopped
     env_file:
       - ./n8n/.env
     ports:
@@ -47,14 +54,24 @@ services:
       - postgres
     volumes:
       - ./n8n:/home/node/.n8n
+    networks:
+      - local-network
 
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
-    restart: always
+    restart: unless-stopped
     ports:
       - "9000:9000"
       - "9443:9443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./portainer/data:/data
+    networks:
+      - local-network
+
+## Usamos bind mounts para os serviços; nenhum volume nomeado é necessário aqui.
+
+networks:
+  local-network:
+    driver: bridge
