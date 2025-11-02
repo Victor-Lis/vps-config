@@ -2,3 +2,5 @@
 */log
 
 *.env
+
+n8n/crash.journal

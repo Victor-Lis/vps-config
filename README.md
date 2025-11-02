@@ -1,106 +1,98 @@
-
 # 🚀 VPS Config — Configurações rápidas para seu VPS com Docker
 
 ![status: ready](https://img.shields.io/badge/status-ready-green) ![docker](https://img.shields.io/badge/docker-ready-blue) ![shield](https://img.shields.io/badge/setup-easy-orange)
 
-Bem-vindo!  
-Este repositório reúne templates e configurações para subir serviços úteis em um VPS com Docker Compose. Ideal para testar, recuperar ou provisionar pequenos ambientes.
+Repositório com templates e configurações para subir serviços úteis em um VPS usando Docker Compose. Ideal para testes, recuperação ou provisionamento rápido de pequenos ambientes.
 
 ---
 
-## 🧩 Serviços incluídos
+## 🧩 Serviços incluídos (definidos em [`docker-compose.yml`](docker-compose.yml))
 
-### 🗄️ Postgres (postgres:16)
-Banco relacional. Usado principalmente pelo n8n. Volume: `./postgres/data`
+- 🗄️ Postgres — [`docker-compose.yml:services.postgres`](docker-compose.yml)  
+  - Imagem: bitnami/postgresql  
+  - Variáveis: veja [postgres/.env.example](postgres/.env.example)  
+  - Volume: `./postgres/data`
+
+- 🤖 n8n — [`docker-compose.yml:services.n8n`](docker-compose.yml)  
+  - Imagem: n8nio/n8n  
+  - Variáveis: veja [n8n/.env.example](n8n/.env.example)  
+  - Config: [n8n/config](n8n/config)  
+  - Volume: `./n8n`
+
+- 🔌 MQTT (Mosquitto) — [`docker-compose.yml:services.mqtt`](docker-compose.yml)  
+  - Configuração: [mqtt/config/mosquitto.conf](mqtt/config/mosquitto.conf)  
+  - Senhas: [mqtt/config/passwd](mqtt/config/passwd)  
+  - Volumes: `./mqtt/config`, `./mqtt/data`, `./mqtt/log`
+
+- 🧭 Portainer — [`docker-compose.yml:services.portainer`](docker-compose.yml)  
+  - Imagem: portainer/portainer-ce  
+  - Volume: `./portainer/data`
+
+- 🧩 Evolution API — [`docker-compose.yml:services.evolution`](docker-compose.yml)  
+  - Imagem: atendai/evolution-api  
+  - Variáveis: [evolution/.env.example](evolution/.env.example)  
+  - Volume: `./evolution`
+
+- 🔁 Redis — [`docker-compose.yml:services.redis`](docker-compose.yml)  
+  - Usado onde necessário pelo ambiente
 
 ---
 
-### 🤖 n8n (n8nio/n8n)
-Plataforma de automação *low-code*. Volume: `./n8n`
+## 📂 Estrutura principal
 
----
-
-### 🔌 MQTT (eclipse-mosquitto:latest)
-Broker leve para mensageria/IoT. Volume: `./mqtt`
-
----
-
-### 🧭 Portainer (portainer/portainer-ce:latest)
-Painel web para gerenciar containers. Volume: `./portainer`
-
----
-
-## 📂 Estrutura do repositório
-
-- `docker-compose.yml` — arquivo principal
-- `mqtt/` — dados e configuração do Mosquitto
-- `n8n/` — dados do n8n
-- `portainer/` — dados do Portainer
-- `postgres/` — dados do Postgres
-- `.gitignore` — ignora diretórios de dados
-- `README.md`
-
-> Observação: diretórios de dados são ignorados para evitar commits de dados sensíveis.
+- [`docker-compose.yml`](docker-compose.yml) — orquestração dos serviços  
+- [`.gitignore`](.gitignore) — evita comitar dados/senhas (ex.: `*.env`, `*/data`, `*/log`)  
+- [`.github/workflows/restart.yaml`](.github/workflows/restart.yaml) — workflow para atualizar/reiniciar remoto via SSH  
+- Exemplos de variáveis: [postgres/.env.example](postgres/.env.example), [n8n/.env.example](n8n/.env.example), [evolution/.env.example](evolution/.env.example)
 
 ---
 
 ## ⚙️ Pré-requisitos
 
-- `git`
-- `docker`
-- `docker-compose`
+- git
+- docker
+- docker-compose
 
 ---
 
 ## ⚡ Início rápido
 
-1) Clone o repositório:
+1) Clone:
 ```bash
 git clone <url-do-repositorio>
 cd vps-config
 ```
 
-2) Ajuste as configurações:
-
-- Revise `docker-compose.yml`.
-- Atualize portas, volumes e variáveis de ambiente (senhas, etc.).
+2) Crie seus arquivos .env a partir dos exemplos:
+```bash
+cp postgres/.env.example postgres/.env
+cp n8n/.env.example n8n/.env
+cp evolution/.env.example evolution/.env
+# ajustar senhas e chaves antes de subir
+```
 
 3) Suba os serviços:
 ```bash
 docker-compose up -d
 ```
 
----
-
-## 🛠️ Comandos úteis
-
-Ver logs (ao vivo):
+4) Logs e gerenciamento:
 ```bash
 docker-compose logs -f <serviço>
-```
-
-Recriar serviço (forçando rebuild):
-```bash
 docker-compose up -d --force-recreate --build <serviço>
-```
-
-Parar / iniciar serviço:
-```bash
 docker-compose stop <serviço>
 docker-compose start <serviço>
 ```
 
 ---
 
-## 💾 Backup e restauração (ex.: Postgres)
+## 💾 Backup (ex.: Postgres)
 
 1. Pare o serviço:
 ```bash
 docker-compose stop postgres
 ```
-
-2. Substitua `./postgres/data` pelo backup (copiar/untar).
-
+2. Substitua `./postgres/data` pelo backup.
 3. Reinicie:
 ```bash
 docker-compose up -d postgres
@@ -108,18 +100,23 @@ docker-compose up -d postgres
 
 ---
 
-## 🔒 Boas práticas e segurança
+## 🔒 Boas práticas
 
-- Nunca comite segredos no `docker-compose.yml`. Use `.env` (e adicione ao `.gitignore`) ou gerenciadores de secret.
-- Faça backups regulares dos volumes (`postgres/data`, `n8n/`).
-- Em produção, prefira volumes gerenciados/externalizados e rotinas de backup robustas.
+- Não comite secrets; use os `.env` e mantenha-os no `.gitignore` ([`.gitignore`](.gitignore)).  
+- Faça backups regulares dos volumes (`postgres/data`, `n8n/`, etc.).  
+- Em produção, considere secrets managers e volumes externos.
+
+---
+
+## 🔁 Deploy remoto
+
+Existe um workflow para reiniciar no servidor remoto via SSH: [`.github/workflows/restart.yaml`](.github/workflows/restart.yaml). Configure os secrets (`SSH_PRIVATE_KEY`, `REMOTE_HOST`) no GitHub Actions antes de usar.
 
 ---
 
 ## ✉️ Contribuições & suporte
 
-Abra uma issue ou envie um pull request.  
-Se quiser, descreva portas/volumes/serviços e eu adapto o `docker-compose.yml`.
+Abra uma issue ou envie um pull request. Se precisar de adaptação nas portas/volumes/serviços, descreva e será ajustado no [`docker-compose.yml`](docker-compose.yml).
 
 ---
 
