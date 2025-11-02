@@ -9,6 +9,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: "VPS - Digital Ocean"
 
     steps:
       - name: Checkout do código
@@ -27,5 +28,5 @@ jobs:
           fi
           ssh-keyscan -H "${{ secrets.REMOTE_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Reiniciar serviços via SSH
-        run: docker compose up -d
+      - name: Reiniciar servicos via SSH
+        run: ssh root@${{ secrets.REMOTE_HOST }} "cd vps-config && docker compose up -d"
