@@ -12,9 +12,6 @@ jobs:
     environment: "VPS - Digital Ocean"
 
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v4
-
       - name: Configurar SSH Agent
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -27,6 +24,9 @@ jobs:
             exit 1
           fi
           ssh-keyscan -H "${{ secrets.REMOTE_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Git pull no servidor remoto
+        run: ssh root@${{ secrets.REMOTE_HOST }} "cd vps-config && git pull"
 
       - name: Reiniciar servicos via SSH
         run: ssh root@${{ secrets.REMOTE_HOST }} "cd vps-config && docker compose up -d"
