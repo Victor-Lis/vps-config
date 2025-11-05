@@ -67,7 +67,7 @@ services:
       - ./n8n:/home/node/.n8n
     networks:
       - local-network
-    command: n8n start --tunnel
+    command: start --tunnel
 
   portainer:
     image: portainer/portainer-ce:latest
