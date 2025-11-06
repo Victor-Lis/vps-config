@@ -42,7 +42,8 @@ services:
     restart: unless-stopped
     env_file:
       - ./evolution/.env
-    # 'ports' removida - O Nginx fará o proxy para a porta 8080 interna.
+    ports:
+      - "8080:8080"
     volumes:
       - ./evolution:/app
       - ./evolution/logs:/app/logs
@@ -55,7 +56,8 @@ services:
     restart: unless-stopped
     env_file:
       - ./n8n/.env
-    # 'ports' removida - O Nginx fará o proxy para a porta 5678 interna.
+    ports:
+      - "5678:5678"
     depends_on:
       - postgres
     volumes:
@@ -68,6 +70,9 @@ services:
     container_name: portainer
     restart: unless-stopped
     # 'ports' removida - O Nginx fará o proxy para a porta 9000 interna.
+    ports:
+      - "9000:9000"
+      - "9443:9443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./portainer/data:/data
