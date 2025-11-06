@@ -14,24 +14,10 @@ http {
     server {
         listen 80;
         server_name $N8N_DOMAIN;
-        
-        # Para renovação do Certbot
+
         location /.well-known/acme-challenge/ {
             root /var/www/certbot;
         }
-
-        # Redirecionar todo o resto para HTTPS
-        location / {
-            return 301 https://$host$request_uri;
-        }
-    }
-    server {
-        listen 443 ssl;
-        server_name $N8N_DOMAIN;
-
-        # Caminho do certificado
-        ssl_certificate /etc/letsencrypt/live/n8n.victorlisbronzo.me/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/n8n.victorlisbronzo.me/privkey.pem;
 
         location / {
             proxy_pass http://n8n:5678;
@@ -41,54 +27,24 @@ http {
     server {
         listen 80;
         server_name $EVO_DOMAIN;
-        
+
         location /.well-known/acme-challenge/ {
             root /var/www/certbot;
         }
 
-        location / {
-            return 301 https://$host$request_uri;
-        }
-    }
-    server {
-        listen 443 ssl;
-        server_name $EVO_DOMAIN;
-
-        # Usar o mesmo certificado (foi gerado em conjunto)
-        ssl_certificate /etc/letsencrypt/live/n8n.victorlisbronzo.me/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/n8n.victorlisbronzo.me/privkey.pem;
-
-        # Redireciona a raiz ("/") para "/manager"
-        location = / {
-            return 301 https://$host/manager;
-        }
-
-        # Outros caminhos (incluindo /manager) vão para a aplicação
         location / {
             proxy_pass http://evolution:8080;
         }
     }
-
+    
     server {
         listen 80;
         server_name $PORTAINER_DOMAIN;
-        
+
         location /.well-known/acme-challenge/ {
             root /var/www/certbot;
         }
-
-        location / {
-            return 301 https://$host$request_uri;
-        }
-    }
-    server {
-        listen 443 ssl;
-        server_name $PORTAINER_DOMAIN;
-
-        # Usar o mesmo certificado
-        ssl_certificate /etc/letsencrypt/live/n8n.victorlisbronzo.me/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/n8n.victorlisbronzo.me/privkey.pem;
-
+        
         location / {
             proxy_pass http://portainer:9000;
         }
