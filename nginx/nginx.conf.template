@@ -27,16 +27,39 @@ http {
 
     server {
         listen 80;
+        server_name ${EVO_DOMAIN};
+
+        # Redireciona HTTP para HTTPS
+        return 301 https://$host$request_uri;
+    }
+
+
+    server {
         listen 443 ssl;
         server_name ${EVO_DOMAIN};
 
         ssl_certificate /etc/letsencrypt/live/${EVO_DOMAIN}/fullchain.pem;
         ssl_certificate_key /etc/letsencrypt/live/${EVO_DOMAIN}/privkey.pem;
 
-        # Redireciona HTTP para HTTPS
-        if ($scheme = http) {
-            return 301 https://$host$request_uri;
-        }
+        
+        # Configurações gerais
+        proxy_http_version 1.1;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        # 🔥 Importante: manter o Authorization header
+        proxy_set_header Authorization $http_authorization;
+
+
+        # 🌍 Permitir CORS globalmente (caso o frontend use origem diferente)
+        add_header Access-Control-Allow-Origin *;
+        add_header Access-Control-Allow-Headers "Authorization, Content-Type";
+        add_header Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE";
+
 
         location / {
             proxy_pass http://evolution:8080;
@@ -44,17 +67,24 @@ http {
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Authorization $http_authorization;
         }
 
-        # Importante: também proxiar /manager corretamente
+
         location /manager/ {
             proxy_pass http://evolution:8080/manager/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Authorization $http_authorization;
         }
-    } 
+
+
+        location /.well-known/acme-challenge/ {
+            root /var/www/certbot;
+        }
+    }
 
     server {
         listen 80;
