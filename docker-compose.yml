@@ -88,7 +88,8 @@ services:
       - "443:443"
     volumes:
       - ./nginx/nginx.conf.template:/etc/nginx/templates/nginx.conf.template
-      - /caminho/para/certificados:/etc/letsencrypt
+      - ./certbot/conf:/etc/letsencrypt # Certbot certificates
+      - ./certbot/www:/var/www/certbot # Certbot webroot
     env_file:
       - ./nginx/domains.env
       # - ./nginx/domains.local.env # Ambiente local
@@ -101,6 +102,13 @@ services:
     command: >
       /bin/sh -c "envsubst '$$N8N_DOMAIN $$EVO_DOMAIN $$PORTAINER_DOMAIN $$MQTT_DOMAIN' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/nginx.conf
       && nginx -g 'daemon off;'"
+    
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
 
 volumes:
   db_volume:
