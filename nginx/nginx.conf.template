@@ -73,8 +73,8 @@ http {
         listen 443 ssl;
         server_name ${PORTAINER_DOMAIN};
 
-        ssl_certificate /etc/letsencrypt/live/${PORTAINER_DOMAIN}/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/${PORTAINER_DOMAIN}/privkey.pem;
+        ssl_certificate /etc/letsencrypt/live/${CERT_DOMAIN}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/${CERT_DOMAIN}/privkey.pem;
 
         location / {
             proxy_pass http://portainer:9000;
@@ -97,8 +97,8 @@ http {
         listen 443 ssl;
         server_name ${N8N_DOMAIN};
 
-        ssl_certificate /etc/letsencrypt/live/${N8N_DOMAIN}/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/${N8N_DOMAIN}/privkey.pem;
+        ssl_certificate /etc/letsencrypt/live/${CERT_DOMAIN}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/${CERT_DOMAIN}/privkey.pem;
 
         ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
@@ -129,8 +129,8 @@ http {
         listen 443 ssl;
         server_name ${PORTFOLIO_DOMAIN};
 
-        ssl_certificate /etc/letsencrypt/live/${PORTFOLIO_DOMAIN}/fullchain.pem;
-        ssl_certificate_key /etc/letsencrypt/live/${PORTFOLIO_DOMAIN}/privkey.pem;
+        ssl_certificate /etc/letsencrypt/live/${CERT_DOMAIN}/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/${CERT_DOMAIN}/privkey.pem;
 
         location / {
             proxy_pass ${PORTFOLIO_PASS};
