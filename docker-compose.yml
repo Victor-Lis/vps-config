@@ -101,7 +101,7 @@ services:
       - evolution
       - portainer
     command: >
-      /bin/sh -c "envsubst '$$N8N_DOMAIN $$EVO_DOMAIN $$PORTAINER_DOMAIN' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/nginx.conf
+      /bin/sh -c "envsubst '$$N8N_DOMAIN $$EVO_DOMAIN $$PORTAINER_DOMAIN $$PORTFOLIO_DOMAIN $$PORTFOLIO_PASS' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/nginx.conf
       && nginx -g 'daemon off;'"
     
   certbot:
