@@ -88,11 +88,12 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf.template:/etc/nginx/templates/nginx.conf.template
+      - ./nginx/nginx.conf.template:/etc/nginx/templates/nginx.conf.template # Produção
+      # - ./nginx/nginx.conf.local.template:/etc/nginx/templates/nginx.conf.template # Ambiente local
       - ./certbot/conf:/etc/letsencrypt # Certbot certificates
       - ./certbot/www:/var/www/certbot # Certbot webroot
     env_file:
-      - ./nginx/domains.env
+      - ./nginx/domains.env # Produção
       # - ./nginx/domains.local.env # Ambiente local
     networks:
       - local-network
