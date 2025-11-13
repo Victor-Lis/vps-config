@@ -38,10 +38,6 @@ http {
             proxy_set_header Authorization $http_authorization;
         }
 
-        location /manager/ {
-            root /usr/share/nginx/html;
-            try_files $uri $uri/ /manager/index.html;
-        }
     }
 
     ### Portainer Nginx Configuration (Local) ###
